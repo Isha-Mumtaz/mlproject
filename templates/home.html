@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f64f59 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 680px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header .emoji {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #f64f59);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.3rem;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="number"] {
+            padding: 0.75rem 1rem;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #333;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            outline: none;
+            width: 100%;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        select:hover, input[type="number"]:hover {
+            border-color: #ccc;
+        }
+
+        .score-group {
+            position: relative;
+        }
+
+        .score-group input {
+            padding-right: 3.5rem;
+        }
+
+        .score-badge {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f64f59 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            display: {% if results %}flex{% else %}none{% endif %};
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, #f0f4ff, #fdf0ff);
+            border: 2px solid #667eea;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-emoji {
+            font-size: 2.5rem;
+        }
+
+        .result-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: #888;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #f64f59);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .result-sub {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.2rem;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #f64f59);
+            border-radius: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 500px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="emoji">🎓</div>
+            <h1>Student Performance Predictor</h1>
+            <p>Predict math scores based on student profile</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <form action="{{ url_for('predict_datapoint')}}" method="post">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required>
+                        <option selected disabled value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Race / Ethnicity</label>
+                    <select name="ethnicity" required>
+                        <option selected disabled value="">Select ethnicity</option>
+                        <option value="group A">Group A</option>
+                        <option value="group B">Group B</option>
+                        <option value="group C">Group C</option>
+                        <option value="group D">Group D</option>
+                        <option value="group E">Group E</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Parental Level of Education</label>
+                    <select name="parental_level_of_education" required>
+                        <option selected disabled value="">Select parent education</option>
+                        <option value="associate's degree">Associate's degree</option>
+                        <option value="bachelor's degree">Bachelor's degree</option>
+                        <option value="high school">High school</option>
+                        <option value="master's degree">Master's degree</option>
+                        <option value="some college">Some college</option>
+                        <option value="some high school">Some high school</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Lunch Type</label>
+                    <select name="lunch" required>
+                        <option selected disabled value="">Select lunch type</option>
+                        <option value="free/reduced">Free / Reduced</option>
+                        <option value="standard">Standard</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Test Preparation</label>
+                    <select name="test_preparation_course" required>
+                        <option selected disabled value="">Select course status</option>
+                        <option value="none">None</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Writing Score</label>
+                    <div class="score-group">
+                        <input type="number" name="reading_score" placeholder="0 - 100" min="0" max="100" required />
+                        <span class="score-badge">/ 100</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Reading Score</label>
+                    <div class="score-group">
+                        <input type="number" name="writing_score" placeholder="0 - 100" min="0" max="100" required />
+                        <span class="score-badge">/ 100</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">✨ Predict Math Score</button>
+        </form>
+
+        {% if results %}
+        <div class="result-box">
+            <div class="result-emoji">🏆</div>
+            <div class="result-text">
+                <span class="result-label">Predicted math score</span>
+                <span class="result-score">{{ results | round(1) }}</span>
+                <span class="result-sub">out of 100</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
